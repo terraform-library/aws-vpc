@@ -9,7 +9,7 @@
 
 ```hcl
 module "vpc" {
-  source    = "git::https://github.com/terraform-library/terraform-aws-vpc.git?ref=master"
+  source    = "git::https://github.com/terraform-library/aws-vpc.git?ref=master"
   name      = "${var.name}"
   namespace = "${var.namespace}"
   stage     = "${var.stage}"
