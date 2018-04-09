@@ -8,7 +8,6 @@ variable "name" {
   type        = "string"
 }
 
-
 variable "managedby" {
   description = "Managedby (e.g. `cp` or `terraform-library`)"
   type        = "string"
