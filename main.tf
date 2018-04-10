@@ -1,8 +1,9 @@
 module "label" {
   source      = "git::https://github.com/terraform-library/terraform-label.git?ref=tags/0.3.1"
-  namespace   = "${var.managedby}"
   name        = "${var.name}"
   environment = "${var.environment}"
+  managedby   = "${var.managedby}"
+  delimiter   = "${var.delimiter}"
 }
 
 resource "aws_vpc" "default" {
