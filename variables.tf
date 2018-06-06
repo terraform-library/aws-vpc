@@ -1,3 +1,8 @@
+variable "create_vpc" {
+  description = "Controls if VPC should be created (it affects almost all resources)"
+  default     = true
+}
+
 variable "name" {
   description = "Name  (e.g. `bastion` or `db`)"
   type        = "string"
@@ -28,6 +33,21 @@ variable "cidr_block" {
 variable "instance_tenancy" {
   description = "A tenancy option for instances launched into the VPC"
   default     = "default"
+}
+
+variable "public_subnets" {
+  description = "A list of public subnets inside the VPC"
+  default     = []
+}
+
+variable "private_subnets" {
+  description = "A list of private subnets inside the VPC"
+  default     = []
+}
+
+variable "availabilities_zones" {
+  description = "A list of availability zones in the region"
+  default     = []
 }
 
 variable "enable_dns_hostnames" {
