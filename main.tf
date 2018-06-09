@@ -1,5 +1,5 @@
 module "label" {
-  source      = "git::https://github.com/terraform-library/null-label.git?ref=master"
+  source      = "git::https://github.com/terraform-library/terraform-label.git?ref=master"
   name        = "${var.name}"
   environment = "${var.environment}"
   managedby   = "${var.managedby}"
