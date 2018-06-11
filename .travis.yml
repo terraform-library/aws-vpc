@@ -15,5 +15,6 @@ before_install:
   - terraform -v
 
 script:
+  - terraform init
   - terraform fmt -check=true
   - docker run --rm -v $(pwd):/app/ --workdir=/app/ -t wata727/tflint --error-with-issues
