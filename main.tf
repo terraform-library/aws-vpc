@@ -7,18 +7,13 @@ module "label" {
 }
 
 terraform {
-  required_version = ">= 0.11.7" # introduction of Local Values configuration language feature
-}
-
-locals {
-  max_subnet_length = "${max(length(var.private_subnets))}"
+  required_version = ">= 0.11.7"
 }
 
 ######
 # VPC
 ######
 resource "aws_vpc" "default" {
-  count = "${var.create_vpc ? 1 : 0}"
 
   cidr_block                       = "${var.cidr_block}"
   instance_tenancy                 = "${var.instance_tenancy}"
@@ -33,7 +28,6 @@ resource "aws_vpc" "default" {
 # Internet Gateway
 ###################
 resource "aws_internet_gateway" "default" {
-  count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
 
   vpc_id = "${aws_vpc.default.id}"
   tags   = "${module.label.tags}"
@@ -43,7 +37,6 @@ resource "aws_internet_gateway" "default" {
 # Public subnet
 ################
 resource "aws_subnet" "public" {
-  count = "${var.create_vpc && length(var.public_subnets) >  0 ? 1 : 0}"
 
   vpc_id                  = "${aws_vpc.default.id}"
   cidr_block              = "${var.public_subnets[count.index]}"
@@ -58,7 +51,7 @@ resource "aws_subnet" "public" {
 # Publiс routes
 ################
 resource "aws_route_table" "public" {
-  count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
+
 
   vpc_id = "${aws_vpc.default.id}"
 
@@ -66,7 +59,6 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "public_internet_gateway" {
-  count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
 
   route_table_id         = "${aws_route_table.public.id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -79,7 +71,6 @@ resource "aws_route" "public_internet_gateway" {
 # Public Route table association
 #################################
 resource "aws_route_table_association" "public" {
-  count = "${var.create_vpc && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0}"
 
   subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.public.*.id, count.index)}"
@@ -90,7 +81,6 @@ resource "aws_route_table_association" "public" {
 # Private subnet
 #################
 resource "aws_subnet" "private" {
-  count = "${var.create_vpc && length(var.private_subnets) >  0 ? length(var.private_subnets) : 0}"
 
   vpc_id                          = "${aws_vpc.default.id}"
   cidr_block                      = "${var.private_subnets[count.index]}"
@@ -102,7 +92,6 @@ resource "aws_subnet" "private" {
 # Private routes
 ################
 resource "aws_route_table" "private" {
-  count = "${var.create_vpc && length(var.private_subnets) > 0 ? 1 : 0}"
 
   vpc_id = "${aws_vpc.default.id}"
 
@@ -110,7 +99,6 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route" "private_internet_gateway" {
-  count = "${var.create_vpc && length(var.private_subnets) > 0 ? 1 : 0}"
 
   route_table_id         = "${aws_route_table.private.id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -122,7 +110,6 @@ resource "aws_route" "private_internet_gateway" {
 # Private Route table association
 ##########################
 resource "aws_route_table_association" "private" {
-  count = "${var.create_vpc && length(var.private_subnets) > 0 ? length(var.private_subnets) : 0}"
 
   subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
