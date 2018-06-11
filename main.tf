@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.10.3" # introduction of Local Values configuration language feature
-}
-
 module "label" {
   source      = "git::https://github.com/terraform-library/terraform-label.git?ref=master"
   name        = "${var.name}"
@@ -10,7 +6,6 @@ module "label" {
   delimiter   = "${var.delimiter}"
 }
 
-<<<<<<< HEAD
 terraform {
   required_version = ">= 0.11.7" # introduction of Local Values configuration language feature
 }
@@ -19,9 +14,6 @@ locals {
   max_subnet_length = "${max(length(var.private_subnets))}"
 }
 
-
-=======
->>>>>>> bc6b0161f0b33ce2ac6ef24d55d5071c2efd5694
 ######
 # VPC
 ######
