@@ -1,11 +1,16 @@
+terraform {
+  required_version = ">= 0.10.3" # introduction of Local Values configuration language feature
+}
+
 module "label" {
-  source      = "git::https://github.com/terraform-library/null-label.git?ref=master"
+  source      = "git::https://github.com/terraform-library/terraform-label.git?ref=master"
   name        = "${var.name}"
   environment = "${var.environment}"
   managedby   = "${var.managedby}"
   delimiter   = "${var.delimiter}"
 }
 
+<<<<<<< HEAD
 terraform {
   required_version = ">= 0.11.7" # introduction of Local Values configuration language feature
 }
@@ -15,6 +20,8 @@ locals {
 }
 
 
+=======
+>>>>>>> bc6b0161f0b33ce2ac6ef24d55d5071c2efd5694
 ######
 # VPC
 ######
