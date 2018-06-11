@@ -43,20 +43,19 @@ module "vpc" {
 
 ## Output
 
-| Name                               |    Default    | Description                                                                      | Required |
-|:-----------------------------------|:-------------:|:---------------------------------------------------------------------------------|:--------:|
-| `igw_id`                           |  `false`      | Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC |    No    |
-| `cidr_block`                       | `10.0.0.0/16` | CIDR for the VPC                                                                 |    No    |
-| `enable_classiclink`               |    `false`    | A boolean flag to enable/disable ClassicLink for the VPC                         |    No    |
-| `enable_classiclink_dns_support`   |    `false`    | A boolean flag to enable/disable ClassicLink DNS Support for the VPC             |    No    |
-| `enable_dns_hostnames`             |    `true`     | A boolean flag to enable/disable DNS hostnames in the VPC                        |    No    |
-| `enable_dns_support`               |    `true`     | A boolean flag to enable/disable DNS support in the VPC                          |    No    |
-| `instance_tenancy`                 |      ``       | A tenancy option for instances launched into the VPC                             |    No    |
-| `name`                             |      ``       | Name  (e.g. `bastion` or `db`)                                                   |    Yes   |
-| `environment`                      |      ``       | Environment (e.g. `prod`, `dev`, `staging`)                                      |    Yes   |
-| `managedby`                        |      ``       | Managedby (e.g. `devops-team` or `terraform-library`)                            |    Yes   |
-
-       
+| Name                               | Description
+|:-----------------------------------|:--------------------------------------------------------------|
+| igw_id                             | The ID of the Internet Gateway                                |                                                        |
+| vpc_id                             | The ID of the VPC                                             |                                  |
+| vpc_cidr_block                     | The CIDR block of the VPC                                     |                                           |
+| route_table_id                     | The ID of the route table created by default on VPC creation  |                                                                              |
+| public_vpc_association_id          | The association ID for public IP CIDR block                   |                                                              |
+| private_vpc_association_id         | The association ID for private IP CIDR block                  |                                                               |
+| private_subnets                    | List of IDs of private subnets                                |                                                 |
+| private_subnets_cidr_blocks        | List of cidr_blocks of private subnets                        |                                                      |
+| public_subnets                     | List of IDs of public subnets                                 |                                                |
+| private_subnets_cidr_blocks        | List of cidr_blocks of public subnets                         |                                                         |
+ 
 ## 👬 Contribution
 
 - Open pull request with improvements

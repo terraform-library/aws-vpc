@@ -20,12 +20,12 @@ output "route_table_id" {
 
 output "public_vpc_association_id" {
   value       = "${aws_route_table_association.public.id}"
-  description = "The association ID for the IPv6 CIDR block"
+  description = "The association ID for the IP CIDR block"
 }
 
 output "private_vpc_association_id" {
   value       = "${aws_route_table_association.private.id}"
-  description = "The association ID for the IPv6 CIDR block"
+  description = "The association ID for the IP CIDR block"
 }
 
 # Subnets
