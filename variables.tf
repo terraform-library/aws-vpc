@@ -50,6 +50,11 @@ variable "availabilities_zones" {
   default     = []
 }
 
+variable "map_public_ip_on_launch" {
+  description = "Should be false if you do not want to auto-assign public IP on launch"
+  default     = true
+}
+
 variable "enable_dns_hostnames" {
   description = "A boolean flag to enable/disable DNS hostnames in the VPC"
   default     = "true"

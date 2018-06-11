@@ -7,8 +7,13 @@ module "label" {
 }
 
 terraform {
-  required_version = ">= 0.10.3" # introduction of Local Values configuration language feature
+  required_version = ">= 0.11.7" # introduction of Local Values configuration language feature
 }
+
+locals {
+  max_subnet_length = "${max(length(var.private_subnets))}"
+}
+
 
 ######
 # VPC
@@ -22,7 +27,6 @@ resource "aws_vpc" "default" {
   enable_dns_support               = "${var.enable_dns_support}"
   enable_classiclink               = "${var.enable_classiclink}"
   enable_classiclink_dns_support   = "${var.enable_classiclink_dns_support}"
-  assign_generated_ipv6_cidr_block = "${var.assign_generated_ipv6_cidr_block}"
   tags                             = "${module.label.tags}"
 }
 
@@ -36,11 +40,58 @@ resource "aws_internet_gateway" "default" {
   tags   = "${module.label.tags}"
 }
 
+################
+# Public subnet
+################
+resource "aws_subnet" "public" {
+  count = "${var.create_vpc && length(var.public_subnets) >  0 ? 1 : 0}"
+
+  vpc_id                  = "${aws_vpc.default.id}"
+  cidr_block              = "${var.public_subnets[count.index]}"
+  availability_zone       = "${element(var.availabilities_zones, count.index)}"
+  map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
+
+  tags   = "${module.label.tags}"
+}
+
+
+################
+# Publiс routes
+################
+resource "aws_route_table" "public" {
+  count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
+
+  vpc_id = "${aws_vpc.default.id}"
+
+  tags   = "${module.label.tags}"
+}
+
+resource "aws_route" "public_internet_gateway" {
+  count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
+
+  route_table_id         = "${aws_route_table.public.id}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${aws_internet_gateway.default.id}"
+  tags   = "${module.label.tags}"
+
+}
+
+#################################
+# Public Route table association
+#################################
+resource "aws_route_table_association" "public" {
+  count = "${var.create_vpc && length(var.public_subnets) > 0 ? length(var.public_subnets) : 0}"
+
+  subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
+  route_table_id = "${element(aws_route_table.public.*.id, count.index)}"
+  tags   = "${module.label.tags}"
+}
+
 #################
 # Private subnet
 #################
 resource "aws_subnet" "private" {
-  count = "${var.create_vpc && length(var.private_subnets) > 0 ? length(var.private_subnets) : 0}"
+  count = "${var.create_vpc && length(var.private_subnets) >  0 ? length(var.private_subnets) : 0}"
 
   vpc_id                          = "${aws_vpc.default.id}"
   cidr_block                      = "${var.private_subnets[count.index]}"
@@ -52,31 +103,30 @@ resource "aws_subnet" "private" {
 # Private routes
 ################
 resource "aws_route_table" "private" {
-  count                          = "${var.create_vpc && length(var.private_subnets) > 0 ? 1 : 0}"
+  count = "${var.create_vpc && length(var.private_subnets) > 0 ? 1 : 0}"
 
-  vpc_id                         = "${aws_vpc.default.id}"
-  tags                           = "${module.label.tags}"
+  vpc_id = "${aws_vpc.default.id}"
+
+  tags   = "${module.label.tags}"
 }
 
-resource "aws_route" "public_internet_gateway" {
+resource "aws_route" "private_internet_gateway" {
   count = "${var.create_vpc && length(var.private_subnets) > 0 ? 1 : 0}"
 
   route_table_id         = "${aws_route_table.private.id}"
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.default.id}"
-
-  timeouts {
-    create = "5m"
-  }
+  tags   = "${module.label.tags}"
 }
 
 ##########################
-# Route table association
+# Private Route table association
 ##########################
 resource "aws_route_table_association" "private" {
   count = "${var.create_vpc && length(var.private_subnets) > 0 ? length(var.private_subnets) : 0}"
 
   subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.private.*.id, (var.single_nat_gateway ? 0 : count.index))}"
+  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
+  tags   = "${module.label.tags}"
 }
 

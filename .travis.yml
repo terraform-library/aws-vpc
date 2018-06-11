@@ -1,0 +1,19 @@
+env:
+  - tf_version=0.11.7
+
+sudo: required
+
+language: bash
+services:
+  - docker
+
+before_install:
+  - curl --silent --output terraform.zip https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_linux_amd64.zip
+  - sha256sum terraform.zip  | grep "6b8ce67647a59b2a3f70199c304abca0ddec0e49fd060944c26f666298e23418"
+  - unzip terraform.zip ; rm -f terraform.zip; chmod +x terraform
+  - mkdir -p ${HOME}/bin ; export PATH=${PATH}:${HOME}/bin; mv terraform ${HOME}/bin/
+  - terraform -v
+
+script:
+  - terraform fmt -check=true
+  - docker run --rm -v $(pwd):/app/ --workdir=/app/ -t wata727/tflint --error-with-issues
